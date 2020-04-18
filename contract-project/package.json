@@ -6,6 +6,9 @@
     "scripts": {
         "build": "npm run compile && npm run typechain",
         "compile": "npx buidler compile",
+        "build:ovm": "npm run compile:ovm && npm run typechain-only",
+        "compile:ovm": "waffle waffle-config.json",
+        "typechain-only": "typechain --outDir typechain --target ethers 'artifacts/*.json'",
         "typechain": "npx buidler compile && typechain --outDir typechain --target ethers 'artifacts/*.json'",
         "test": "npx buidler test",
         "lint:prettier": "prettier --write 'src/**/*.{js,ts}' 'test/**/*.{js,ts}' 'contracts/**/*.sol'",
@@ -37,6 +40,8 @@
     },
     "homepage": "https://github.com/chicago-ethereum/quadratic-funding#readme",
     "devDependencies": {
+        "@eth-optimism/solc-transpiler": "^0.0.1-alpha.25",
+        "@eth-optimism/rollup-full-node": "^0.0.1-alpha.25",
         "@nomiclabs/buidler": "^1.1.2",
         "@nomiclabs/buidler-ethers": "^1.1.2",
         "@nomiclabs/buidler-etherscan": "^1.1.2",

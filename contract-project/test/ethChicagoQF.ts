@@ -1,6 +1,9 @@
 import {waffle} from "@nomiclabs/buidler";
 import chai from "chai";
-import {deployContract, solidity} from "ethereum-waffle";
+// import {deployContract, solidity} from "ethereum-waffle";
+import {solidity} from "ethereum-waffle";
+import {Wallet} from 'ethers';
+const {createMockProvider, getWallets, deployContract } = require('@eth-optimism/rollup-full-node');
 
 import ContributionsArtifact from "../artifacts/EthChicagoQF.json";
 import {EthChicagoQF} from "../typechain/EthChicagoQF";
@@ -11,25 +14,45 @@ chai.use(solidity);
 const {expect} = chai;
 
 describe("EthChicagoQF contract", () => {
-    const provider = waffle.provider;
+    let adminWalletObject: Wallet;
+    let projectWalletObject: Wallet;
+    let backerWalletObject: Wallet;
+    let approvedWalletObject: Wallet;
+    let projectWalletTwoObject: Wallet;
+    let projectWalletThreeObject: Wallet;
 
-    let [
-        adminWalletObject,
-        projectWalletObject,
-        backerWalletObject,
-        approvedWalletObject,
-        projectWalletTwoObject,
-        projectWalletThreeObject
-    ] = provider.getWallets();
+    let adminAddress: string;
+    let backerAddress: string;
+    let projectAddress: string;
+    let approvedWalletAddress: string;
 
-    const {address: adminAddress} = adminWalletObject;
-    const {address: backerAddress} = backerWalletObject;
-    const {address: projectAddress} = projectWalletObject;
-    const {address: approvedWalletAddress} = approvedWalletObject;
-    console.log({adminAddress});
-    console.log({backerAddress});
-    console.log({projectAddress});
-    console.log({approvedWalletAddress});
+    let provider: any
+
+    before(async () => {
+        //const provider = waffle.provider;
+        provider = await createMockProvider();
+
+        ;[
+            adminWalletObject,
+            projectWalletObject,
+            backerWalletObject,
+            approvedWalletObject,
+            projectWalletTwoObject,
+            projectWalletThreeObject
+        ] = getWallets(provider);
+
+        adminAddress = adminWalletObject.address;
+        backerAddress = backerWalletObject.address;
+        projectAddress = projectWalletObject.address;
+        approvedWalletAddress = approvedWalletObject.address;
+        console.log({adminAddress});
+        console.log({backerAddress});
+        console.log({projectAddress});
+        console.log({approvedWalletAddress});
+    });
+
+    after(() => {provider.closeOVM()});
+
 
     let ethChicagoQFContract: EthChicagoQF;
     let ethChicagoQFContractAsBacker: EthChicagoQF;
@@ -43,7 +66,8 @@ describe("EthChicagoQF contract", () => {
     beforeEach(async () => {
         ethChicagoQFContract = (await deployContract(
             adminWalletObject,
-            ContributionsArtifact
+            ContributionsArtifact,
+            []
         )) as EthChicagoQF;
 
         ethChicagoQFContractAddress = ethChicagoQFContract.address;
